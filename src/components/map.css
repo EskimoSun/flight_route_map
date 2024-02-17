@@ -1,5 +1,5 @@
 .country{
-    fill: #ccc;
+    fill: #ccddee;
     stroke: #fff;
     stroke-width: 0.5;
 }
@@ -29,7 +29,7 @@ line.active{
 circle.init{
     r: 1;
     fill: #444;
-    opacity: 0.7;
+    opacity: 0.5;
 }
 
 circle.connected{

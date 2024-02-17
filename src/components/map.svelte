@@ -103,9 +103,6 @@
         // Add airport names as titles
         circles.append('title')
           .text(d => d.airport);
-      
-        
-
         d3.select('#tooltip').style('opacity', 0);
       })
       .catch(error => {
@@ -132,22 +129,18 @@
     const circle = d3.select(this);
     const iata = d.iata;
 
-    // Highlight circle and its connected segment if clicked
-    if (!clickedCircles.has(iata)) {
-      circle.classed('hover', true); // Hover attributes
-
-      svg.selectAll('line').each(function(lineData) {
-        const sourceIata = lineData.source_iata;
-        const destinationIata = lineData.destination_iata;
-        if ((sourceIata === iata || destinationIata === iata) && !clickedCircles.has(iata)) {
-          d3.select(this).classed('hover', true); // Hover attributes
-
-          // Find the other endpoint of the line and change its color
-          const otherIata = sourceIata === iata ? destinationIata : sourceIata;
-          circles.filter(c => c.iata === otherIata).classed('connected', true); // Connected attributes
-        }
-      });
-    }
+    circle.classed('hover', true); // Hover attributes
+    svg.selectAll('line').each(function(lineData) {
+      const sourceIata = lineData.source_iata;
+      const destinationIata = lineData.destination_iata;
+      if ((sourceIata === iata || destinationIata === iata)) {
+        d3.select(this).classed('hover', true); // Hover attributes
+        // Find the other endpoint of the line and change its color
+        const otherIata = sourceIata === iata ? destinationIata : sourceIata;
+        circles.filter(c => c.iata === otherIata).classed('connected', true); // Connected attributes
+      }
+    });
+    
     // Show tooltip with airport name
     d3.select('#tooltip')
       .style('left', (event.pageX + 10) + 'px')
@@ -163,7 +156,7 @@
 
     // Revert circle and segment color if not clicked
     if (!clickedCircles.has(iata)) {
-      circle.classed('hover', false); // Remove hover attributes
+      circle.classed('hover', false).classed('active', false); // Remove hover attributes
 
       svg.selectAll('line').each(function(lineData) {
         const sourceIata = lineData.source_iata;
@@ -462,9 +455,22 @@
   }
 
   #writeup{
+    font-size: 16px;
+    margin: 30px;
+    background-color: azure;
+    border-radius: 10px;
+    border: 1px solid grey;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  #credits{
     font-size: 15px;
-    margin-left: 20px;
+    text-align: right;
     margin-right: 20px;
+    color:darkgray;
   }
 </style>
 
@@ -482,7 +488,7 @@
 <ul id="connectedAirports" style="position: absolute; top: 70px; right: 20px;"></ul>
 
 <div id="writeup">
-  <span></span>
+  <span>Notes: </span>
   <p>
     The primary aim of this visualization is to create an interactive global airport map using D3.js and Svelte. The map is designed to be visually appealing, user-friendly, and informative regarding the global airport network. All design decisions were made with the intention of optimizing the user experience and usability. The construction process involved two main components: data presentation and interaction techniques.
   </p>
@@ -495,4 +501,8 @@
   <p>
     During the map development process, we collaborated to source and import data onto the web page, which was completed swiftly. The majority of that process time was dedicated to finding data and determining the visualization objectives, totaling approximately one and a half hours. Regarding interaction implementation, David was in charge of the interaction techniques for the data points on the map mentioned above, particularly focusing on hover and click interactions. This phase was the most time-consuming, spanning about four hours due to the complexity of the code and numerous opportunities for enhancement. Zhiqing primarily undertook tasks related to map zoom functionality and retrieval features, such as integrating the drop-down suggestion list, with a time investment of approximately three hours. Overall, the collaboration resulted in a comprehensive and user-friendly interactive airport map.
   </p>
+</div>
+
+<div id="credits">
+  <span>App developed by Zhiqing Wang & David Sun</span>
 </div>
