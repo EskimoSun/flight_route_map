@@ -16,7 +16,7 @@
   let selected_y; // Define variable to record selected circle y position
 
   // Load and draw map data on component mount
-  onMount(() => {
+  onMount(async () => {
     // Define projection
     const projection = d3.geoMercator()
       .scale(170)
@@ -30,6 +30,15 @@
       .scaleExtent([1, 4]) // Define zoom extent
       .on('zoom', handleZoom);
 
+    // Fetch data from static folder
+    const airports_csv = await fetch('airports_info_final.csv');
+    const routes_csv = await fetch('route_final.csv');
+    const airports_txt = await airports_csv.text();
+    const routes_txt = await routes_csv.text();
+    // Load data into variable
+    airportData =  d3.csvParse(airports_txt, d3.autoType);
+    const routes = d3.csvParse(routes_txt, d3.autoType);
+    
     // Load world map data
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       .then(worldData => {
@@ -47,61 +56,55 @@
           .attr('class', 'country')
           .attr('d', path);
 
-        // Load airport data
-        d3.csv('/src/components/data/airports_info_final.csv').then(data => {
-          airportData = data; // Store airport data in the global variable
+        // Filter routes data based on 'number_airport' column
+        const filteredRoutesData = routes.filter(route => route.number_airport > 150);
+
+        // Create data for all filtered routes
+        lines = filteredRoutesData.map(route => {
+          // only use routes with airport data in airportData
+          const sourceAirport = airportData.find(airport => airport.iata === route.source_airport);
+          const destinationAirport = airportData.find(airport => airport.iata === route.destination_airport);
+          if (sourceAirport && destinationAirport) {
+            const sourceCoords = projection([+sourceAirport.long, +sourceAirport.lat]);
+            const destCoords = projection([+destinationAirport.long, +destinationAirport.lat]);
+            return {
+              source_iata: route.source_airport,
+              destination_iata: route.destination_airport,
+              sourceCoords,
+              destCoords
+            };
+          }
+        }).filter(route => route); // Filter out undefined routes
+
+        // Draw lines
+        svg.selectAll('line')
+          .data(lines)
+          .enter().append('line')
+          .attr('x1', d => d.sourceCoords[0])
+          .attr('y1', d => d.sourceCoords[1])
+          .attr('x2', d => d.destCoords[0])
+          .attr('y2', d => d.destCoords[1])
+          .classed('init', true); // Initial attributes
           
-          // Load routes data
-          d3.csv('/src/components/data/route_final.csv').then(routesData => {
-            // Filter routes data based on 'number_airport' column
-            const filteredRoutesData = routesData.filter(route => route.number_airport > 150);
+        // Draw circles
+        circles = svg.selectAll('circle')
+          .data(airportData.filter(d => {
+            // Filter only the airports mentioned in filteredRoutesData
+            return lines.some(route => route.source_iata === d.iata || route.destination_iata === d.iata);
+          }))
+          .enter().append('circle')
+          .attr('cx', d => projection([+d.long, +d.lat])[0])
+          .attr('cy', d => projection([+d.long, +d.lat])[1])
+          .classed('init', true) // Initial attributes
+          .on('mouseover', handleMouseOver)
+          .on('mouseout', handleMouseOut)
+          .on('click', handleMouseClick);
 
-            // Create data for all filtered routes
-            lines = filteredRoutesData.map(route => {
-              // only use routes with airport data in airportData
-              const sourceAirport = airportData.find(airport => airport.iata === route.source_airport);
-              const destinationAirport = airportData.find(airport => airport.iata === route.destination_airport);
-              if (sourceAirport && destinationAirport) {
-                const sourceCoords = projection([+sourceAirport.long, +sourceAirport.lat]);
-                const destCoords = projection([+destinationAirport.long, +destinationAirport.lat]);
-                return {
-                  source_iata: route.source_airport,
-                  destination_iata: route.destination_airport,
-                  sourceCoords,
-                  destCoords
-                };
-              }
-            }).filter(route => route); // Filter out undefined routes
-
-            // Draw lines
-            svg.selectAll('line')
-              .data(lines)
-              .enter().append('line')
-              .attr('x1', d => d.sourceCoords[0])
-              .attr('y1', d => d.sourceCoords[1])
-              .attr('x2', d => d.destCoords[0])
-              .attr('y2', d => d.destCoords[1])
-              .classed('init', true); // Initial attributes
-              
-            // Draw circles
-            circles = svg.selectAll('circle')
-              .data(airportData.filter(d => {
-                // Filter only the airports mentioned in filteredRoutesData
-                return lines.some(route => route.source_iata === d.iata || route.destination_iata === d.iata);
-              }))
-              .enter().append('circle')
-              .attr('cx', d => projection([+d.long, +d.lat])[0])
-              .attr('cy', d => projection([+d.long, +d.lat])[1])
-              .classed('init', true) // Initial attributes
-              .on('mouseover', handleMouseOver)
-              .on('mouseout', handleMouseOut)
-              .on('click', handleMouseClick);
-
-            // Add airport names as titles
-            circles.append('title')
-              .text(d => d.airport);
-          });
-        });
+        // Add airport names as titles
+        circles.append('title')
+          .text(d => d.airport);
+      
+        
 
         d3.select('#tooltip').style('opacity', 0);
       })

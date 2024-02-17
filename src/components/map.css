@@ -11,13 +11,6 @@ line.init{
     opacity: 0.2;
 }
 
-/*
-line.hidden{
-    stroke: grey;
-    stroke-width: 0.8;
-    opacity: 0.2;
-}
-*/
 
 line.hover{
     stroke: lime;
