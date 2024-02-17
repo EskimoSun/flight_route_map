@@ -12,8 +12,8 @@
   let suggestions = []; // Define variable to hold suggested airport codes
   let clickedCircles = new Set(); // Keep track of clicked circles
   let svg; // Define variable to hold the SVG element
-  let selected_x;
-  let selected_y;
+  let selected_x; // Define variable to record selected circle x position
+  let selected_y; // Define variable to record selected circle y position
 
   // Load and draw map data on component mount
   onMount(() => {
@@ -102,6 +102,8 @@
               .text(d => d.airport);
           });
         });
+
+        d3.select('#tooltip').style('opacity', 0);
       })
       .catch(error => {
         console.error('Error loading map data:', error);
@@ -115,6 +117,7 @@
     svg.selectAll('circle').attr('transform', transform); // Apply zoom transform to circles
     svg.selectAll('line').attr('transform', transform); // Apply zoom transform to lines
 
+    // Tramsform tooltip position
     const transform_tooltip = d3.zoomTransform(svg.node());
     d3.select('#tooltip')
       .style("left", (transform_tooltip.applyX(selected_x) + 20 + "px"))
@@ -454,6 +457,12 @@
     z-index: 1; /* Ensure suggestions appear above other elements */
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Add box shadow */
   }
+
+  #writeup{
+    font-size: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
 </style>
 
 <!-- Search bar -->
@@ -468,3 +477,19 @@
 
 <!-- Connected airports -->
 <ul id="connectedAirports" style="position: absolute; top: 70px; right: 20px;"></ul>
+
+<div id="writeup">
+  <span></span>
+  <p>
+    The primary aim of this visualization is to create an interactive global airport map using D3.js and Svelte. The map is designed to be visually appealing, user-friendly, and informative regarding the global airport network. All design decisions were made with the intention of optimizing the user experience and usability. The construction process involved two main components: data presentation and interaction techniques.
+  </p>
+  <p>
+    In terms of data presentation, airport information and routes were carefully selected and processed for optimal web page performance. The Mercator projection was chosen for drawing the world map due to its ability to accurately represent angles, shapes, and distances between regions, aligning well with the flight route data, compared with other d3 projections like geoAzimuthalEqualArea and geoAlbers. The map utilizes a simple and clear visualization approach, using circles to denote airports and lines to illustrate routes between them. Initially, a gray color scheme was employed to maintain visual clarity before user interaction.
+  </p>
+  <p>
+    Regarding interaction techniques, three main aspects were considered. Firstly, zoom functionality was incorporated to facilitate exploration of detailed map areas due to the abundance of data. Secondly, interaction with map data points, including hover and click actions, was improved through visual cues like color changes, enhancing user comprehension and engagement. Tooltips were also introduced to offer additional airport information upon hover, providing users with detailed insights without requiring additional clicks, thus enhancing the overall experience. Notably, selected airports remain highlighted, with their selection order displayed, facilitating the creation of flight paths with multiple stops. Lastly, a search bar was implemented to enable users to quickly locate specific airports and associated routes by IATA code, with autocomplete suggestions provided for ease of use and cognitive load reduction. Additionally, a formula calculating the distance between latitude and longitude was included to illustrate the spatial relationship between airports, adding further value to the map. Two options were considered for search bar interaction: automatically displaying search results upon finding an airport or showing results only upon user action (clicking or entering). To better meet user needs, the decision was made to adopt the second option.
+  </p>
+  <p>
+    During the map development process, we collaborated to source and import data onto the web page, which was completed swiftly. The majority of that process time was dedicated to finding data and determining the visualization objectives, totaling approximately one and a half hours. Regarding interaction implementation, David was in charge of the interaction techniques for the data points on the map mentioned above, particularly focusing on hover and click interactions. This phase was the most time-consuming, spanning about four hours due to the complexity of the code and numerous opportunities for enhancement. Zhiqing primarily undertook tasks related to map zoom functionality and retrieval features, such as integrating the drop-down suggestion list, with a time investment of approximately three hours. Overall, the collaboration resulted in a comprehensive and user-friendly interactive airport map.
+  </p>
+</div>
