@@ -1,2 +1,6 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+    import App from '/src/components/map.svelte';
+</script>
+
+<h1>Flight Route Map</h1>
+<App />
