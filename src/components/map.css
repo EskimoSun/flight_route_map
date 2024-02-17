@@ -13,21 +13,21 @@ line.init{
 
 
 line.hover{
-    stroke: lime;
-    stroke-width: 0.8;
+    stroke: rgba(0, 227, 0, 0.871);
+    stroke-width: 1.5;
     stroke-dasharray: auto;
     opacity: 0.9;
 }
 
 line.active{
     stroke: #0088cc;
-    stroke-width: 1;
+    stroke-width: 1.5;
     stroke-dasharray: 10 1;
     opacity: 0.9;
 }
 
 circle.init{
-    r: 1;
+    r: 1.5;
     fill: #444;
     opacity: 0.5;
 }

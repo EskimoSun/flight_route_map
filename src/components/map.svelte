@@ -387,7 +387,7 @@
   }
 </script>
 
-<svg width={width} height={height}>
+<svg id="map" width={width} height={height}>
   <g></g>
 </svg>
 
@@ -472,6 +472,11 @@
     margin-right: 20px;
     color:darkgray;
   }
+
+  #map{
+    background-color: #faf2e5ef;
+    border: 1px solid grey;
+  }
 </style>
 
 <!-- Search bar -->
@@ -488,7 +493,8 @@
 <ul id="connectedAirports" style="position: absolute; top: 70px; right: 20px;"></ul>
 
 <div id="writeup">
-  <span>Notes: </span>
+  <span style="font-weight:bold">Disclaimer: Response time is slower when zoomed in. Will be updated in the future.</span>
+  <p>Notes: </p>
   <p>
     The primary aim of this visualization is to create an interactive global airport map using D3.js and Svelte. The map is designed to be visually appealing, user-friendly, and informative regarding the global airport network. All design decisions were made with the intention of optimizing the user experience and usability. The construction process involved two main components: data presentation and interaction techniques.
   </p>
@@ -504,5 +510,5 @@
 </div>
 
 <div id="credits">
-  <span>App developed by Zhiqing Wang & David Sun</span>
+  <span>Application developed by Zhiqing Wang & David Sun</span>
 </div>
